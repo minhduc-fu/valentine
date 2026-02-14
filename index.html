@@ -24,7 +24,7 @@
       overflow:hidden;
     }
     .card{
-      width:min(560px, 92vw);
+      width:min(620px, 92vw);
       padding:28px 22px;
       border-radius:24px;
       background: var(--card);
@@ -32,6 +32,8 @@
       box-shadow: 0 18px 40px var(--shadow);
       text-align:center;
       animation: popIn .8s ease both;
+      position: relative;
+      z-index: 2;
     }
     @keyframes popIn{
       from{opacity:0; transform: translateY(16px) scale(.98);}
@@ -49,31 +51,23 @@
       opacity:.98;
     }
 
-    /* Sticker/icon */
-    .sticker-wrap{
-      display:grid;
-      place-items:center;
-      margin: 10px 0 18px;
-    }
+    /* Sticker */
+    .sticker-wrap{ display:grid; place-items:center; margin: 10px 0 18px; }
     .sticker{
-      width: 120px;
-      height: 120px;
+      width: 150px;
+      height: 150px;
       border-radius: 22px;
       background: rgba(255,255,255,.18);
       box-shadow: 0 10px 22px rgba(0,0,0,.12);
+      overflow:hidden;
       display:grid;
       place-items:center;
-      overflow:hidden;
     }
     .sticker img{
       width:100%;
       height:100%;
       object-fit: cover;
       display:block;
-    }
-    .sticker.emoji{
-      font-size:64px;
-      line-height:1;
     }
 
     /* Buttons */
@@ -83,6 +77,8 @@
       justify-content:center;
       flex-wrap:wrap;
       margin-top: 6px;
+      position: relative;
+      z-index: 3;
     }
     button{
       border:none;
@@ -94,46 +90,81 @@
       transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
       box-shadow: 0 12px 22px rgba(0,0,0,.16);
       user-select:none;
+      -webkit-tap-highlight-color: transparent;
     }
     button:active{ transform: scale(.98); }
     .yes{
       background: rgba(255,255,255,.95);
       color: #ff4f7a;
-      transform: scale(var(--yesScale, 1));
     }
     .no{
       background: rgba(20,20,20,.25);
       color: #fff;
       backdrop-filter: blur(6px);
     }
-    .no:hover{ filter: brightness(1.05); }
 
-    /* Small hearts floating (optional cute effect) */
-    .heart{
-      position:absolute;
-      bottom:-20px;
-      font-size: 18px;
-      opacity: .9;
-      animation: floatUp 6s linear forwards;
-      pointer-events:none;
-      filter: drop-shadow(0 6px 12px rgba(0,0,0,.15));
+    .hint{ margin-top:12px; font-size: 12.5px; opacity:.85; }
+
+    /* Success overlay */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
     }
-    @keyframes floatUp{
-      to{
-        transform: translateY(-120vh) translateX(var(--drift, 0px));
-        opacity: 0;
-      }
+    .modal{
+      width: min(680px, 94vw);
+      background: rgba(255,255,255,.20);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.28);
+      padding: 18px;
+      text-align: center;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal h2{
+      margin: 8px 0 12px;
+      font-size: clamp(20px, 3vw, 28px);
+      text-shadow: 0 2px 10px rgba(0,0,0,.18);
+    }
+    .final-img{
+      width: min(420px, 82vw);
+      aspect-ratio: 1 / 1;
+      border-radius: 22px;
+      overflow: hidden;
+      margin: 0 auto 10px;
+      background: rgba(255,255,255,.18);
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
+    }
+    .final-img img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
     }
 
-    .hint{
-      margin-top:12px;
-      font-size: 12.5px;
-      opacity:.85;
+    /* Bouquet gif "bung ra" */
+    .bouquet{
+      position: absolute;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, -50%) scale(.2);
+      opacity: 0;
+      width: min(420px, 86vw);
+      pointer-events: none;
+      animation: bouquetPop 1.1s ease forwards;
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,.25));
     }
-    .small{
-      font-size: 12px;
-      opacity: .85;
-      margin-top: 6px;
+    @keyframes bouquetPop{
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
   </style>
 </head>
@@ -144,12 +175,9 @@
     <p class="question">Will you be my valentine?</p>
 
     <div class="sticker-wrap">
-      <!-- Sticker zone -->
-      <div id="stickerBox" class="sticker">
-        <!-- default sticker (image or emoji) goes here -->
+      <div class="sticker">
         <img id="stickerImg" alt="sticker" />
       </div>
-      <div class="small" id="stickerNote">💗</div>
     </div>
 
     <div class="btn-row">
@@ -157,114 +185,161 @@
       <button class="no" id="noBtn">No</button>
     </div>
 
-    <div class="hint">Tip: Hover “No” 😼</div>
+    <div class="hint">Di chuột vào “No” nha 😼</div>
   </main>
+
+  <!-- Success -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2>Yayyy! 💖</h2>
+      <div class="final-img">
+        <img id="finalImg" alt="final" />
+      </div>
+
+      <!-- Bouquet gif -->
+      <img id="bouquetGif" class="bouquet" alt="bouquet" />
+      <div class="hint">Bấm ra ngoài để đóng</div>
+    </div>
+  </div>
 
   <script>
     // =========================
-    // 1) TÙY CHỈNH STICKER Ở ĐÂY
+    // CẤU HÌNH: ĐỔI TÊN FILE ẢNH/GIF Ở ĐÂY
+    // (Upload các file này lên GitHub cùng folder với index.html)
     // =========================
-    // Bạn có thể dùng:
-    // - Link ảnh/GIF online (https://...)
-    // - Hoặc emoji (bật chế độ emoji bên dưới)
-    const STICKER_BEFORE = {
-  type: "image",
-  value: "1.jpg"
-};
+    const IMAGES = [
+      "1.png", // ảnh 1 (hiện ban đầu / lần 1)
+      "2.png", // ảnh 2 (lần 2)
+      "3.png", // ảnh 3 (lần 3)
+      "4.png", // ảnh 4 (lần 4)
+      "5.png", // ảnh 5 (lần 5)
+      "6.png"  // ảnh 6 (khi bấm Yes)
+    ];
 
-const STICKER_AFTER = {
-  type: "image",
-  value: "2.jpg"
-};
+    // gif bó hoa bung ra (upload file hoặc dùng link online)
+    const BOUQUET_GIF = "bouquet.gif";
 
-    // Scale tăng của nút Yes mỗi lần click vào "Don't you love me?"
-    const YES_GROW_STEP = 0.18;
-    const YES_GROW_MAX  = 2.2;
+    // Yes "bự lên 20 đơn vị" mỗi lần (mình set tăng padding X/Y mỗi lần)
+    const GROW_STEP = 20; // px
+    const MAX_GROW_STEPS = 8;
+
+    // Text theo từng lần hover vào No (lần 1..4)
+    const NO_TEXTS = [
+      "Don't u love me?", // lần 1
+      "Are u sure?",      // lần 2
+      "Bae pleaseee? 🥺", // lần 3 (mình nghĩ giúp bạn)
+      "Last chance 😳",   // lần 4 (mình nghĩ giúp bạn)
+    ];
 
     // =========================
-    // 2) LOGIC
+    // LOGIC
     // =========================
+    const stickerImg = document.getElementById("stickerImg");
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
-    const stickerBox = document.getElementById("stickerBox");
-    const stickerImg = document.getElementById("stickerImg");
-    const stickerNote = document.getElementById("stickerNote");
 
-    let noIsTeasing = false;
-    let yesScale = 1;
+    const overlay = document.getElementById("overlay");
+    const finalImg = document.getElementById("finalImg");
+    const bouquetGif = document.getElementById("bouquetGif");
 
-    function setSticker(sticker){
-      // reset
-      stickerBox.classList.remove("emoji");
-      stickerImg.style.display = "none";
-      stickerBox.textContent = ""; // clear emoji if any
-      stickerBox.appendChild(stickerImg); // ensure img exists
-      stickerNote.textContent = "";
+    let hoverCount = 0;
 
-      if(sticker.type === "emoji"){
-        stickerBox.classList.add("emoji");
-        stickerBox.textContent = sticker.value;
-        stickerNote.textContent = "✨";
-      } else {
-        stickerImg.src = sticker.value;
-        stickerImg.style.display = "block";
-        stickerNote.textContent = "✨";
+    // base size of Yes button
+    const base = {
+      padX: 18,
+      padY: 12,
+      font: 16
+    };
+    let growSteps = 0;
+
+    function setSticker(idx){
+      stickerImg.src = IMAGES[idx] || IMAGES[0];
+    }
+
+    function growYes(){
+      growSteps = Math.min(MAX_GROW_STEPS, growSteps + 1);
+      const padX = base.padX + (GROW_STEP/2) * growSteps; // tăng ngang
+      const padY = base.padY + (GROW_STEP/2) * growSteps; // tăng dọc
+      const font = base.font + 1.2 * growSteps;
+
+      yesBtn.style.padding = `${padY}px ${padX}px`;
+      yesBtn.style.fontSize = `${font}px`;
+    }
+
+    function rand(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+    function moveNoRandom(){
+      // chuyển sang chạy tự do trên màn hình
+      noBtn.style.position = "fixed";
+      noBtn.style.zIndex = "1000";
+
+      const w = noBtn.offsetWidth;
+      const h = noBtn.offsetHeight;
+
+      const maxX = Math.max(10, window.innerWidth - w - 10);
+      const maxY = Math.max(10, window.innerHeight - h - 10);
+
+      const x = rand(10, maxX);
+      const y = rand(10, maxY);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+    }
+
+    function stageUpdate(){
+      // hoverCount: 1..5
+      if(hoverCount >= 1 && hoverCount <= 4){
+        noBtn.textContent = NO_TEXTS[hoverCount - 1];
+        growYes();
+        setSticker(hoverCount - 1); // img1..img4 theo stage
+      } else if(hoverCount === 5){
+        // lần 5: No chạy random, không bấm nổi nữa
+        noBtn.textContent = "No";
+        setSticker(4); // img5
+        moveNoRandom();
       }
     }
 
-    function spawnHeart(){
-      const h = document.createElement("div");
-      h.className = "heart";
-      h.textContent = Math.random() > 0.5 ? "💖" : "💗";
-      h.style.left = (Math.random() * 100) + "vw";
-      h.style.setProperty("--drift", ((Math.random() * 120) - 60) + "px");
-      h.style.fontSize = (14 + Math.random() * 18) + "px";
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), 6500);
-    }
+    // Init
+    setSticker(0);
 
-    // Init sticker
-    setSticker(STICKER_BEFORE);
-
-    // Hover vào No => đổi chữ
+    // Mỗi lần di chuột vào No => tăng stage (tối đa 5)
     noBtn.addEventListener("mouseenter", () => {
-      noBtn.textContent = "Don't you love me?";
-      noIsTeasing = true;
-    });
+      if(hoverCount < 5) hoverCount++;
+      stageUpdate();
 
-    noBtn.addEventListener("mouseleave", () => {
-      noBtn.textContent = "No";
-      noIsTeasing = false;
-    });
-
-    // Click vào "Don't you love me?" => Yes to lên + đổi sticker
-    noBtn.addEventListener("click", () => {
-      if(!noIsTeasing) return;
-
-      yesScale = Math.min(YES_GROW_MAX, yesScale + YES_GROW_STEP);
-      document.documentElement.style.setProperty("--yesScale", yesScale.toFixed(2));
-
-      setSticker(STICKER_AFTER);
-
-      // cute hearts burst
-      for(let i=0;i<8;i++){
-        setTimeout(spawnHeart, i * 90);
+      // Stage 5: cứ chạm vào là nó né tiếp
+      if(hoverCount >= 5){
+        moveNoRandom();
       }
     });
 
-    // Click Yes (optional: làm gì đó)
+    // Stage 5: thêm né chuột cả khi mousemove (cực khó click)
+    noBtn.addEventListener("mousemove", () => {
+      if(hoverCount >= 5) moveNoRandom();
+    });
+
+    // Click Yes => show ảnh 6 + bouquet gif bung ra
     yesBtn.addEventListener("click", () => {
-      // Bạn có thể đổi nội dung/redirect ở đây nếu muốn
-      alert("Yayyy! 💘");
-      for(let i=0;i<12;i++){
-        setTimeout(spawnHeart, i * 70);
-      }
+      finalImg.src = IMAGES[5];
+      bouquetGif.src = BOUQUET_GIF;
+
+      // reset animation bouquet mỗi lần mở
+      bouquetGif.style.animation = "none";
+      // force reflow
+      void bouquetGif.offsetWidth;
+      bouquetGif.style.animation = "bouquetPop 1.1s ease forwards";
+
+      overlay.style.display = "flex";
     });
 
-    // subtle background hearts
-    setInterval(() => {
-      if(Math.random() < 0.35) spawnHeart();
-    }, 500);
+    // Click ra ngoài đóng overlay
+    overlay.addEventListener("click", (e) => {
+      if(e.target === overlay) overlay.style.display = "none";
+    });
+
+    // (optional) chống cache: khi đổi file mà web chưa cập nhật, thử reload mạnh
+    // Ctrl+F5 / Cmd+Shift+R, hoặc thêm ?v=2 cuối link.
   </script>
 </body>
 </html>
