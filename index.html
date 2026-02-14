@@ -260,31 +260,41 @@
 
     function rand(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
 
-    function moveNoAwayFrom(x, y, minDist = 140){
-      // đảm bảo nút "No" đã là fixed để nhảy tự do
-      noBtn.style.position = "fixed";
-      noBtn.style.zIndex = "1000";
+    function moveNoAwayFrom(x, y, minDist = 120){
+  noBtn.style.position = "fixed";
+  noBtn.style.zIndex = "1000";
 
-      const w = noBtn.offsetWidth;
-      const h = noBtn.offsetHeight;
-      const maxX = Math.max(10, window.innerWidth - w - 10);
-      const maxY = Math.max(10, window.innerHeight - h - 10);
+  const margin = 20; // lề an toàn khỏi mép màn hình
 
-      let tries = 0;
-      let nx = 10, ny = 10;
+  const rect = noBtn.getBoundingClientRect();
+  const w = rect.width;
+  const h = rect.height;
 
-      while (tries < 30){
-        nx = rand(10, maxX);
-        ny = rand(10, maxY);
-        const dx = (nx + w/2) - x;
-        const dy = (ny + h/2) - y;
-        if (Math.hypot(dx, dy) >= minDist) break;
-        tries++;
-      }
+  const maxX = window.innerWidth - w - margin;
+  const maxY = window.innerHeight - h - margin;
 
-      noBtn.style.left = nx + "px";
-      noBtn.style.top  = ny + "px";
-    }
+  let nx, ny;
+  let tries = 0;
+
+  do {
+    nx = Math.random() * (maxX - margin) + margin;
+    ny = Math.random() * (maxY - margin) + margin;
+
+    const dx = (nx + w/2) - x;
+    const dy = (ny + h/2) - y;
+
+    tries++;
+    if (Math.hypot(dx, dy) >= minDist) break;
+
+  } while (tries < 40);
+
+  // Clamp lần cuối để chắc chắn không tràn
+  nx = Math.max(margin, Math.min(nx, maxX));
+  ny = Math.max(margin, Math.min(ny, maxY));
+
+  noBtn.style.left = nx + "px";
+  noBtn.style.top  = ny + "px";
+}
 
     // tránh di chuyển quá dày khi stage 5
     let evadeRAF = null;
