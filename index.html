@@ -24,7 +24,8 @@
       overflow:hidden;
     }
     .card{
-      width:min(640px, 92vw);
+      width: 1100px;
+  min-height: 750px; 
       padding:28px 22px;
       border-radius:24px;
       background: var(--card);
@@ -175,7 +176,7 @@
       <button class="no" id="noBtn">No</button>
     </div>
 
-    <div class="hint">Hover “No” rồi thử click 😼</div>
+    <div class="hint">Hover “No” rồi  click 😼</div>
   </main>
 
   <div class="overlay" id="overlay">
@@ -235,59 +236,41 @@
     }
 
     function moveNoAwayFrom(mouseX, mouseY, minDist = 130){
-      noBtn.style.position = "fixed";
-      noBtn.style.zIndex = "1000";
 
-      const margin = 16;
-      const rect = noBtn.getBoundingClientRect();
-      const w = rect.width;
-      const h = rect.height;
+  const card = document.getElementById("card");
+  const cardRect = card.getBoundingClientRect();
 
-      const minX = margin;
-      const minY = margin;
-      const maxX = window.innerWidth - w - margin;
-      const maxY = window.innerHeight - h - margin;
+  noBtn.style.position = "fixed";
+  noBtn.style.zIndex = "1000";
 
-      if (maxX < minX || maxY < minY) {
-        noBtn.style.left = minX + "px";
-        noBtn.style.top  = minY + "px";
-        return;
-      }
+  const margin = 20;
+  const w = noBtn.offsetWidth;
+  const h = noBtn.offsetHeight;
 
-      const cur = noBtn.getBoundingClientRect();
-      const curCx = cur.left + w/2;
-      const curCy = cur.top + h/2;
+  const minX = cardRect.left + margin;
+  const minY = cardRect.top + margin;
+  const maxX = cardRect.right - w - margin;
+  const maxY = cardRect.bottom - h - margin;
 
-      let best = null;
+  let nx, ny;
+  let tries = 0;
 
-      for (let tries = 0; tries < 60; tries++){
-        const radiusX = Math.min(260, maxX - minX);
-        const radiusY = Math.min(220, maxY - minY);
+  do {
+    nx = Math.random() * (maxX - minX) + minX;
+    ny = Math.random() * (maxY - minY) + minY;
 
-        const nx = curCx + (Math.random()*2 - 1) * radiusX;
-        const ny = curCy + (Math.random()*2 - 1) * radiusY;
+    const dx = (nx + w/2) - mouseX;
+    const dy = (ny + h/2) - mouseY;
 
-        const clampedX = Math.max(minX, Math.min(nx - w/2, maxX));
-        const clampedY = Math.max(minY, Math.min(ny - h/2, maxY));
+    tries++;
+    if (Math.hypot(dx, dy) >= minDist) break;
 
-        const dx = (clampedX + w/2) - mouseX;
-        const dy = (clampedY + h/2) - mouseY;
+  } while (tries < 40);
 
-        if (Math.hypot(dx, dy) >= minDist) {
-          best = { x: clampedX, y: clampedY };
-          break;
-        }
+  noBtn.style.left = nx + "px";
+  noBtn.style.top  = ny + "px";
+}
 
-        best = best || { x: clampedX, y: clampedY };
-      }
-
-      // final clamp to ensure always visible
-      best.x = Math.max(minX, Math.min(best.x, maxX));
-      best.y = Math.max(minY, Math.min(best.y, maxY));
-
-      noBtn.style.left = best.x + "px";
-      noBtn.style.top  = best.y + "px";
-    }
 
     // Stage 5 evade
     let evadeRAF = null;
