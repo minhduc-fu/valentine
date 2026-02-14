@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Happy Valentine 💖</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        text-align: center;
+        color: white;
+      }
+
+      .box {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 40px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        animation: fadeIn 2s ease-in-out;
+      }
+
+      h1 {
+        font-size: 40px;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 20px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .heart {
+        position: absolute;
+        font-size: 20px;
+        animation: float 5s linear infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-10vh);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>Happy Valentine 💖</h1>
+      <p>
+        Cảm ơn bạn đã xuất hiện trong cuộc đời mình 🌸<br />
+        Mong rằng mỗi ngày của bạn đều tràn đầy niềm vui.<br /><br />
+        From: [Tên của bạn]
+      </p>
+    </div>
+
+    <script>
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 20 + 10 + "px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 5000);
+      }
+
+      setInterval(createHeart, 300);
+    </script>
+  </body>
+</html>
