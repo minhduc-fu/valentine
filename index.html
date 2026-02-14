@@ -53,8 +53,8 @@
     /* Image */
     .sticker-wrap{ display:grid; place-items:center; margin: 10px 0 18px; }
     .sticker{
-      width: 160px;
-      height: 160px;
+      width: 170px;
+      height: 170px;
       border-radius: 22px;
       background: rgba(255,255,255,.18);
       box-shadow: 0 10px 22px rgba(0,0,0,.12);
@@ -90,19 +90,28 @@
       box-shadow: 0 12px 22px rgba(0,0,0,.16);
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
     }
     button:active{ transform: scale(.98); }
+
     .yes{
       background: rgba(255,255,255,.95);
       color: #ff4f7a;
     }
+
+    /* Make "No" always readable */
     .no{
-      background: rgba(20,20,20,.25);
+      background: rgba(20,20,20,.55);
       color: #fff;
       backdrop-filter: blur(6px);
+      border: 2px solid rgba(255,255,255,.55);
     }
 
-    .hint{ margin-top:12px; font-size: 12.5px; opacity:.85; }
+    .hint{
+      margin-top:12px;
+      font-size: 12.5px;
+      opacity:.85;
+    }
 
     /* Success overlay */
     .overlay{
@@ -147,29 +156,11 @@
       object-fit: cover;
       display:block;
     }
-
-    /* Bouquet pop */
-    .bouquet{
-      position: absolute;
-      left: 50%;
-      top: 55%;
-      transform: translate(-50%, -50%) scale(.2);
-      opacity: 0;
-      width: min(420px, 86vw);
-      pointer-events: none;
-      animation: bouquetPop 1.1s ease forwards;
-      filter: drop-shadow(0 12px 20px rgba(0,0,0,.25));
-    }
-    @keyframes bouquetPop{
-      0%   { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
-      60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    }
   </style>
 </head>
 <body>
 
-  <main class="card">
+  <main class="card" id="card">
     <h1>Happy Valentine's Day Bae</h1>
     <p class="question">Will you be my valentine?</p>
 
@@ -184,7 +175,7 @@
       <button class="no" id="noBtn">No</button>
     </div>
 
-    
+    <div class="hint">Hover “No” rồi thử click 😼</div>
   </main>
 
   <div class="overlay" id="overlay">
@@ -193,28 +184,19 @@
       <div class="final-img">
         <img id="finalImg" alt="final" />
       </div>
-      <img id="bouquetGif" class="bouquet" alt="bouquet" />
       <div class="hint">Bấm ra ngoài để đóng</div>
     </div>
   </div>
 
   <script>
     // =========================
-    // ĐỔI TÊN FILE ẢNH/GIF Ở ĐÂY (upload cùng cấp với index.html)
-    // img1..img5: ảnh trong quá trình "No"
-    // img6: ảnh khi bấm Yes
+    // ĐỔI TÊN FILE ẢNH Ở ĐÂY (upload cùng cấp với index.html)
+    // 1..5: ảnh theo từng stage của "No"
+    // 6: ảnh khi bấm Yes
     // =========================
-    const IMAGES = [
-      "1.jpg",
-      "2.jpg",
-      "3.jpg",
-      "4.jpg",
-      "5.jpg",
-      "6.jpg"
-    ];
-    const BOUQUET_GIF = "bouquet.jpg";
+    const IMAGES = ["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg"];
 
-    // mỗi lần click vào chữ ở nút No (4 lần đầu) -> Yes bự lên "20 đơn vị"
+    // mỗi lần click vào câu ở nút No (4 lần đầu) -> Yes bự lên "20 đơn vị"
     const GROW_STEP = 20; // px (tăng padding)
     const MAX_GROW_STEPS = 10;
 
@@ -229,14 +211,9 @@
     const stickerImg = document.getElementById("stickerImg");
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
-
     const overlay = document.getElementById("overlay");
     const finalImg = document.getElementById("finalImg");
-    const bouquetGif = document.getElementById("bouquetGif");
 
-    // stageIndex:
-    // 0..3: hover đổi text, click -> đổi lại No + nhảy vị trí
-    // 4: "If u can :)" và nút né chuột liên tục
     let stageIndex = 0;
 
     // Yes base
@@ -244,7 +221,6 @@
     let growSteps = 0;
 
     function setStickerByStage(){
-      // stage 0->img1, 1->img2, 2->img3, 3->img4, 4->img5
       const idx = Math.min(stageIndex, 4);
       stickerImg.src = IMAGES[idx] || IMAGES[0];
     }
@@ -258,45 +234,62 @@
       yesBtn.style.fontSize = `${font}px`;
     }
 
-    function rand(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function moveNoAwayFrom(mouseX, mouseY, minDist = 130){
+      noBtn.style.position = "fixed";
+      noBtn.style.zIndex = "1000";
 
-    function moveNoAwayFrom(x, y, minDist = 120){
-  noBtn.style.position = "fixed";
-  noBtn.style.zIndex = "1000";
+      const margin = 16;
+      const rect = noBtn.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
 
-  const margin = 20; // lề an toàn khỏi mép màn hình
+      const minX = margin;
+      const minY = margin;
+      const maxX = window.innerWidth - w - margin;
+      const maxY = window.innerHeight - h - margin;
 
-  const rect = noBtn.getBoundingClientRect();
-  const w = rect.width;
-  const h = rect.height;
+      if (maxX < minX || maxY < minY) {
+        noBtn.style.left = minX + "px";
+        noBtn.style.top  = minY + "px";
+        return;
+      }
 
-  const maxX = window.innerWidth - w - margin;
-  const maxY = window.innerHeight - h - margin;
+      const cur = noBtn.getBoundingClientRect();
+      const curCx = cur.left + w/2;
+      const curCy = cur.top + h/2;
 
-  let nx, ny;
-  let tries = 0;
+      let best = null;
 
-  do {
-    nx = Math.random() * (maxX - margin) + margin;
-    ny = Math.random() * (maxY - margin) + margin;
+      for (let tries = 0; tries < 60; tries++){
+        const radiusX = Math.min(260, maxX - minX);
+        const radiusY = Math.min(220, maxY - minY);
 
-    const dx = (nx + w/2) - x;
-    const dy = (ny + h/2) - y;
+        const nx = curCx + (Math.random()*2 - 1) * radiusX;
+        const ny = curCy + (Math.random()*2 - 1) * radiusY;
 
-    tries++;
-    if (Math.hypot(dx, dy) >= minDist) break;
+        const clampedX = Math.max(minX, Math.min(nx - w/2, maxX));
+        const clampedY = Math.max(minY, Math.min(ny - h/2, maxY));
 
-  } while (tries < 40);
+        const dx = (clampedX + w/2) - mouseX;
+        const dy = (clampedY + h/2) - mouseY;
 
-  // Clamp lần cuối để chắc chắn không tràn
-  nx = Math.max(margin, Math.min(nx, maxX));
-  ny = Math.max(margin, Math.min(ny, maxY));
+        if (Math.hypot(dx, dy) >= minDist) {
+          best = { x: clampedX, y: clampedY };
+          break;
+        }
 
-  noBtn.style.left = nx + "px";
-  noBtn.style.top  = ny + "px";
-}
+        best = best || { x: clampedX, y: clampedY };
+      }
 
-    // tránh di chuyển quá dày khi stage 5
+      // final clamp to ensure always visible
+      best.x = Math.max(minX, Math.min(best.x, maxX));
+      best.y = Math.max(minY, Math.min(best.y, maxY));
+
+      noBtn.style.left = best.x + "px";
+      noBtn.style.top  = best.y + "px";
+    }
+
+    // Stage 5 evade
     let evadeRAF = null;
     function evadeCursor(cx, cy){
       if (evadeRAF) return;
@@ -309,75 +302,57 @@
     // Init
     setStickerByStage();
 
-    // Hover vào No: chỉ đổi chữ (chưa tăng stage)
+    // Hover: đổi chữ theo stage (chưa tăng stage)
     noBtn.addEventListener("mouseenter", () => {
       noBtn.textContent = STAGES[stageIndex] || "No";
       setStickerByStage();
-
-      // stage 5: vừa chạm vào là nó né liền
-      if(stageIndex >= 4){
-        // dùng vị trí chuột gần đúng (fallback center)
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        moveNoAwayFrom(cx, cy, 180);
-      }
     });
 
-    // Rời khỏi No: đổi lại "No" (trừ stage 5 thì vẫn giữ "If u can :)")
+    // Rời: stage 0..3 về "No", stage 4 giữ "If u can :)"
     noBtn.addEventListener("mouseleave", () => {
       if(stageIndex < 4) noBtn.textContent = "No";
     });
 
-    // Click No:
-    // - Nếu đang ở stage 0..3 và text đang là câu tương ứng -> chuyển về "No", nhảy chỗ khác, tăng stage
-    // - Nếu stage 4 ("If u can :)") -> không cho click (nó sẽ né chuột liên tục)
+    // Click No: chỉ hoạt động khi đang hiện đúng câu stage 0..3
     noBtn.addEventListener("click", (e) => {
-      if(stageIndex >= 4) return; // stage 5: gần như không click được
+      if(stageIndex >= 4) return;
 
       const expected = STAGES[stageIndex];
-      if(noBtn.textContent !== expected) return; // bắt buộc phải hover để hiện câu rồi mới click
+      if(noBtn.textContent !== expected) return;
 
-      // sau click: về "No" + nhảy khỏi vị trí vừa click
       noBtn.textContent = "No";
-      moveNoAwayFrom(e.clientX, e.clientY, 160);
+      moveNoAwayFrom(e.clientX, e.clientY, 150);
 
-      // (tuỳ bạn) mỗi lần "No click" thành công -> Yes bự lên
       growYes();
 
-      // qua stage tiếp theo
       stageIndex++;
       setStickerByStage();
-
-      // Nếu vừa lên stage 5: bật chế độ né chuột liên tục
-      if(stageIndex >= 4){
-        noBtn.textContent = "No"; // sẽ đổi sang "If u can :)" khi hover lần tới
-      }
     });
 
-    // Stage 5: nút sẽ né chuột liên tục khi người dùng cố chạm vào
+    // Stage 5: nút né chuột liên tục
     noBtn.addEventListener("mousemove", (e) => {
       if(stageIndex >= 4){
-        noBtn.textContent = STAGES[4]; // "If u can :)"
+        noBtn.textContent = STAGES[4];
         evadeCursor(e.clientX, e.clientY);
       }
     });
 
-    // Click Yes => show ảnh 6 + bouquet gif bung ra
+    // Click Yes => show ảnh 6 (không bouquet)
     yesBtn.addEventListener("click", () => {
       finalImg.src = IMAGES[5];
-      bouquetGif.src = BOUQUET_GIF;
-
-      // reset animation
-      bouquetGif.style.animation = "none";
-      void bouquetGif.offsetWidth;
-      bouquetGif.style.animation = "bouquetPop 1.1s ease forwards";
-
       overlay.style.display = "flex";
     });
 
-    // Click ra ngoài đóng
     overlay.addEventListener("click", (e) => {
       if(e.target === overlay) overlay.style.display = "none";
+    });
+
+    // If resize while No is fixed, keep it visible
+    window.addEventListener("resize", () => {
+      if (getComputedStyle(noBtn).position === "fixed") {
+        const r = noBtn.getBoundingClientRect();
+        moveNoAwayFrom(r.left + r.width/2, r.top + r.height/2, 0);
+      }
     });
   </script>
 </body>
