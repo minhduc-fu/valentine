@@ -1,94 +1,270 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Happy Valentine 💖</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-        text-align: center;
-        color: white;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Valentine's Day Bae</title>
+  <style>
+    :root{
+      --bg1:#ff9a9e;
+      --bg2:#fad0c4;
+      --card: rgba(255,255,255,.22);
+      --text: #ffffff;
+      --shadow: rgba(0,0,0,.18);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      overflow:hidden;
+    }
+    .card{
+      width:min(560px, 92vw);
+      padding:28px 22px;
+      border-radius:24px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px var(--shadow);
+      text-align:center;
+      animation: popIn .8s ease both;
+    }
+    @keyframes popIn{
+      from{opacity:0; transform: translateY(16px) scale(.98);}
+      to{opacity:1; transform: translateY(0) scale(1);}
+    }
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(26px, 4vw, 38px);
+      letter-spacing:.2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.15);
+    }
+    .question{
+      font-size: clamp(16px, 2.5vw, 22px);
+      margin: 0 0 18px;
+      opacity:.98;
+    }
 
-      .box {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 40px;
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        animation: fadeIn 2s ease-in-out;
-      }
+    /* Sticker/icon */
+    .sticker-wrap{
+      display:grid;
+      place-items:center;
+      margin: 10px 0 18px;
+    }
+    .sticker{
+      width: 120px;
+      height: 120px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.18);
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    .sticker img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .sticker.emoji{
+      font-size:64px;
+      line-height:1;
+    }
 
-      h1 {
-        font-size: 40px;
-        margin-bottom: 20px;
-      }
+    /* Buttons */
+    .btn-row{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+    button{
+      border:none;
+      cursor:pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 650;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      box-shadow: 0 12px 22px rgba(0,0,0,.16);
+      user-select:none;
+    }
+    button:active{ transform: scale(.98); }
+    .yes{
+      background: rgba(255,255,255,.95);
+      color: #ff4f7a;
+      transform: scale(var(--yesScale, 1));
+    }
+    .no{
+      background: rgba(20,20,20,.25);
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+    .no:hover{ filter: brightness(1.05); }
 
-      p {
-        font-size: 20px;
+    /* Small hearts floating (optional cute effect) */
+    .heart{
+      position:absolute;
+      bottom:-20px;
+      font-size: 18px;
+      opacity: .9;
+      animation: floatUp 6s linear forwards;
+      pointer-events:none;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,.15));
+    }
+    @keyframes floatUp{
+      to{
+        transform: translateY(-120vh) translateX(var(--drift, 0px));
+        opacity: 0;
       }
+    }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+    .hint{
+      margin-top:12px;
+      font-size: 12.5px;
+      opacity:.85;
+    }
+    .small{
+      font-size: 12px;
+      opacity: .85;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
 
-      .heart {
-        position: absolute;
-        font-size: 20px;
-        animation: float 5s linear infinite;
-      }
+  <main class="card">
+    <h1>Happy Valentine's Day Bae</h1>
+    <p class="question">Will you be my valentine?</p>
 
-      @keyframes float {
-        0% {
-          transform: translateY(100vh);
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(-10vh);
-          opacity: 0;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="box">
-      <h1>Happy Valentine 💖</h1>
-      <p>
-        Cảm ơn bạn đã xuất hiện trong cuộc đời mình 🌸<br />
-        Mong rằng mỗi ngày của bạn đều tràn đầy niềm vui.<br /><br />
-        From: [Tên của bạn]
-      </p>
+    <div class="sticker-wrap">
+      <!-- Sticker zone -->
+      <div id="stickerBox" class="sticker">
+        <!-- default sticker (image or emoji) goes here -->
+        <img id="stickerImg" alt="sticker" />
+      </div>
+      <div class="small" id="stickerNote">💗</div>
     </div>
 
-    <script>
-      function createHeart() {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
-        heart.innerHTML = "💖";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = Math.random() * 20 + 10 + "px";
-        document.body.appendChild(heart);
+    <div class="btn-row">
+      <button class="yes" id="yesBtn">Yes</button>
+      <button class="no" id="noBtn">No</button>
+    </div>
 
-        setTimeout(() => {
-          heart.remove();
-        }, 5000);
+    <div class="hint">Tip: Hover “No” 😼</div>
+  </main>
+
+  <script>
+    // =========================
+    // 1) TÙY CHỈNH STICKER Ở ĐÂY
+    // =========================
+    // Bạn có thể dùng:
+    // - Link ảnh/GIF online (https://...)
+    // - Hoặc emoji (bật chế độ emoji bên dưới)
+    const STICKER_BEFORE = {
+  type: "image",
+  value: "1.jpg"
+};
+
+const STICKER_AFTER = {
+  type: "image",
+  value: "2.jpg"
+};
+
+    // Scale tăng của nút Yes mỗi lần click vào "Don't you love me?"
+    const YES_GROW_STEP = 0.18;
+    const YES_GROW_MAX  = 2.2;
+
+    // =========================
+    // 2) LOGIC
+    // =========================
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const stickerBox = document.getElementById("stickerBox");
+    const stickerImg = document.getElementById("stickerImg");
+    const stickerNote = document.getElementById("stickerNote");
+
+    let noIsTeasing = false;
+    let yesScale = 1;
+
+    function setSticker(sticker){
+      // reset
+      stickerBox.classList.remove("emoji");
+      stickerImg.style.display = "none";
+      stickerBox.textContent = ""; // clear emoji if any
+      stickerBox.appendChild(stickerImg); // ensure img exists
+      stickerNote.textContent = "";
+
+      if(sticker.type === "emoji"){
+        stickerBox.classList.add("emoji");
+        stickerBox.textContent = sticker.value;
+        stickerNote.textContent = "✨";
+      } else {
+        stickerImg.src = sticker.value;
+        stickerImg.style.display = "block";
+        stickerNote.textContent = "✨";
       }
+    }
 
-      setInterval(createHeart, 300);
-    </script>
-  </body>
+    function spawnHeart(){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = Math.random() > 0.5 ? "💖" : "💗";
+      h.style.left = (Math.random() * 100) + "vw";
+      h.style.setProperty("--drift", ((Math.random() * 120) - 60) + "px");
+      h.style.fontSize = (14 + Math.random() * 18) + "px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 6500);
+    }
+
+    // Init sticker
+    setSticker(STICKER_BEFORE);
+
+    // Hover vào No => đổi chữ
+    noBtn.addEventListener("mouseenter", () => {
+      noBtn.textContent = "Don't you love me?";
+      noIsTeasing = true;
+    });
+
+    noBtn.addEventListener("mouseleave", () => {
+      noBtn.textContent = "No";
+      noIsTeasing = false;
+    });
+
+    // Click vào "Don't you love me?" => Yes to lên + đổi sticker
+    noBtn.addEventListener("click", () => {
+      if(!noIsTeasing) return;
+
+      yesScale = Math.min(YES_GROW_MAX, yesScale + YES_GROW_STEP);
+      document.documentElement.style.setProperty("--yesScale", yesScale.toFixed(2));
+
+      setSticker(STICKER_AFTER);
+
+      // cute hearts burst
+      for(let i=0;i<8;i++){
+        setTimeout(spawnHeart, i * 90);
+      }
+    });
+
+    // Click Yes (optional: làm gì đó)
+    yesBtn.addEventListener("click", () => {
+      // Bạn có thể đổi nội dung/redirect ở đây nếu muốn
+      alert("Yayyy! 💘");
+      for(let i=0;i<12;i++){
+        setTimeout(spawnHeart, i * 70);
+      }
+    });
+
+    // subtle background hearts
+    setInterval(() => {
+      if(Math.random() < 0.35) spawnHeart();
+    }, 500);
+  </script>
+</body>
 </html>
